@@ -2,32 +2,37 @@ import axios from 'axios';
 
 const GEMINI_API_KEY = process.env.EXPO_PUBLIC_GEMINI_API_KEY;
 
-const geminiprov1 = `/v1/models/gemini-pro:generateContent`;
+//For Image
+const serviceEndpoint = `https://southamerica-east1-aiplatform.googleapis.com`
+const urlImageAPI = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`
 
+//For Chat
+const geminiprov1 = `/v1/models/gemini-pro:generateContent`;
 const version = geminiprov1; //Select Version Here
 const url = `https://generativelanguage.googleapis.com${version}`;
 
 const GeminiService = {
-    getImageResponse: async (prompt, imageUri) => {
+    getImageResponse: async (prompt, imageUri, image64Base) => {
 
 
 
         try {
-            const response = await axios.post(url, 
+            const response = await axios.post(urlImageAPI, 
             {
                 "contents":[
                     {
                         "role": "user",
                         "parts":[
                             {
-                                fileData: {
-                                    mimeType: "image/jpeg",
-                                    content: image,
-                                }
-                            }, 
-                            {
                                 "text": prompt
                             },
+                            {
+                                "inline_data": {
+                                    "mime_type": "image/jpeg",
+                                    "data": image64Base
+                                },
+                            }, 
+                            
                         ]
                     }
                 ]
