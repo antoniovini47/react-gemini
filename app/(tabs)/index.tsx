@@ -1,42 +1,97 @@
-import { Image, StyleSheet, Platform } from "react-native";
+import { Text, StyleSheet, TouchableOpacity, SafeAreaView, View, ScrollView } from "react-native";
+import ChatMessage from "@/components/ChatMessage";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import GeminiImage from "@/components/ImageGemini";
+import { ScreenContainer } from "react-native-screens";
 
 export default function HomeScreen() {
+  const messages: any[] = [
+    { fromMe: true, text: "Foto enviada!", createdAt: "2024-04-18T15:34:49.888Z" },
+    { fromMe: false, text: "msg recebida!", createdAt: "2024-04-18T15:34:49.888Z" },
+  ];
+
+  function openCamera() {
+    console.log("abrir camera");
+  }
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
-      headerImage={
-        <Image
-          source={require("@/assets/images/partial-react-logo.png")}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Gemini Image!</ThemedText>
-      </ThemedView>
-      <GeminiImage />
-    </ParallaxScrollView>
+    <SafeAreaView style={styles.containerScreen}>
+      <View style={styles.containerTitle}>
+        <Text style={styles.textTitle}>Camera</Text>
+      </View>
+      <ScrollView style={styles.containerChat}>
+        {messages.map((msg, index) => {
+          const { fromMe, text, createdAt, imageUri } = msg;
+          return (
+            <ChatMessage
+              key={index}
+              fromMe={fromMe}
+              text={text}
+              createdAt={createdAt}
+              imageUri={imageUri}
+            />
+          );
+        })}
+      </ScrollView>
+      <View style={styles.containerFooter}>
+        <TouchableOpacity
+          onPress={() => {
+            console.log("Opening settings...");
+          }}
+          style={styles.buttonFooter}>
+          <Text style={styles.textButton}>Settings</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            console.log("Opening camera...");
+          }}
+          style={styles.buttonFooter}>
+          <Text style={styles.textButton}>Camera</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            console.log("Choosing photo from files...");
+          }}
+          style={styles.buttonFooter}>
+          <Text style={styles.textButton}>Files</Text>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
+  containerScreen: {
+    backgroundColor: "black",
+    flexDirection: "column",
+    flex: 1,
+  },
+  containerTitle: {
     flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  containerChat: {
+    flexDirection: "column",
+    backgroundColor: "blue",
+    flex: 1,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: "absolute",
+  containerFooter: {
+    justifyContent: "space-between",
+    flexDirection: "row",
+  },
+
+  textTitle: {
+    fontSize: 48,
+    color: "#FFF",
+  },
+  textButton: {
+    color: "#FFF",
+    fontSize: 32,
+  },
+
+  buttonFooter: {
+    color: "gray",
+    borderColor: "#FFF",
   },
 });
