@@ -1,10 +1,5 @@
 import { Text, StyleSheet, TouchableOpacity, SafeAreaView, View, ScrollView } from "react-native";
 import ChatMessage from "@/components/ChatMessage";
-import ParallaxScrollView from "@/components/ParallaxScrollView";
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
-import GeminiImage from "@/components/ImageGemini";
-import { ScreenContainer } from "react-native-screens";
 
 export default function HomeScreen() {
   const messages: any[] = [
