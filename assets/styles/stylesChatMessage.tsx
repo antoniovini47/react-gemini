@@ -22,10 +22,10 @@ const stylesChatMessage = StyleSheet.create({
     borderRadius: 24,
     paddingHorizontal: 24,
     paddingVertical: 8,
-    marginBottom: 24,
     alignSelf: "flex-end",
     backgroundColor: colors.greenSecondary,
     ...shadowEffect,
+    marginBottom: 24,
   },
   messageReceived: {
     borderRadius: 24,
