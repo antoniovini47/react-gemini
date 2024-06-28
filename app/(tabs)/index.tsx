@@ -3,13 +3,16 @@ import ChatMessage from "@/components/ChatMessage";
 
 export default function HomeScreen() {
   const messages: any[] = [
-    { fromMe: true, text: "Foto enviada!", createdAt: "2024-04-18T15:34:49.888Z" },
-    { fromMe: false, text: "msg recebida!", createdAt: "2024-04-18T15:34:49.888Z" },
+    {
+      type: "fromMe",
+      text: "Foto enviada!",
+      imageUri:
+        "file:///var/mobile/Containers/Data/Application/9D3277A9-5B6E-43B3-94CD-4551BBECF212/Library/Caches/ExponentExperienceData/@anonymous/react-gemini-9badf188-66a3-41fa-8bc6-1dafdd2b3319/ImagePicker/96390ADA-B449-4E54-A2B3-C4D3B0C1DB92.jpg",
+      createdAt: "2024-06-26T15:34:49.888Z",
+    },
+    { type: "fromSystem", text: "27/06/2024", createdAt: "2024-04-27T03:01:49.888Z" },
+    { type: "fromAI", text: "msg recebida!", createdAt: "2024-06-27T15:34:49.888Z" },
   ];
-
-  function openCamera() {
-    console.log("abrir camera");
-  }
 
   return (
     <SafeAreaView style={styles.containerScreen}>
@@ -18,11 +21,11 @@ export default function HomeScreen() {
       </View>
       <ScrollView style={styles.containerChat}>
         {messages.map((msg, index) => {
-          const { fromMe, text, createdAt, imageUri } = msg;
+          const { type, text, createdAt, imageUri } = msg;
           return (
             <ChatMessage
               key={index}
-              fromMe={fromMe}
+              type={type}
               text={text}
               createdAt={createdAt}
               imageUri={imageUri}
@@ -68,8 +71,10 @@ const styles = StyleSheet.create({
   },
   containerChat: {
     flexDirection: "column",
-    backgroundColor: "blue",
+    backgroundColor: "white",
     flex: 1,
+    padding: 24,
+    margin: 12,
   },
   containerFooter: {
     justifyContent: "space-between",
