@@ -16,6 +16,7 @@ const url = `https://generativelanguage.googleapis.com${version}`;
 
 const GeminiService = {
     getImageResponse: async (image64Base) => {
+        console.log("getImageResponse iniciado...Base64: ", image64Base);
         try {
             const response = await axios.post(urlImageAPI, 
             {

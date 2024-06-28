@@ -53,7 +53,7 @@ const GeminiImage = () => {
       console.log("Image URI: " + imageUri);
       //console.log("Image Base64: " + base64);
 
-      const result = await GeminiService.getImageResponse(input, imageUri, base64);
+      const result = await GeminiService.getImageResponse(base64);
       setResponse(result.data.candidates[0].content.parts[0].text);
     } catch (error) {
       console.error(error);

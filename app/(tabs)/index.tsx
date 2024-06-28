@@ -1,11 +1,12 @@
 import { Text, Pressable, SafeAreaView, View, ScrollView } from "react-native";
 import ChatMessage, { ChatMessageProps } from "@/components/ChatMessage";
+import GeminiService from "@/GeminiService";
 import styles from "@/assets/styles/stylesIndex";
 import { useEffect, useState } from "react";
 import initialMessages from "@/assets/messages";
 import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from "expo-file-system";
 import useToast from "@/hooks/useToast";
-import { RollInRight, scrollTo } from "react-native-reanimated";
 
 const randomSendedMessages = [
   "Avalie minha refeicao!",
@@ -16,17 +17,45 @@ const randomSendedMessages = [
 
 export default function HomeScreen() {
   const [messages, setMessages] = useState<ChatMessageProps[]>([]);
-  const [imageUri, setImageUri] = useState<string | null>(null);
-  const [imageBase64, setImageBase64] = useState<string | null>(null);
+  let tempAiMessage = "";
 
-  function createNewMessage(imageUri: string) {
+  async function handleNewRequestForAI(imageBase64: string) {
+    //setMessages([...messages, createNewMessage("fromAI", "analisando...", "")]);
+
+    tempAiMessage = "Analisando imagem...";
+    try {
+      const result = await new Promise((resolve) => {
+        setTimeout(() => {
+          resolve(void 0);
+        }, 2000);
+      });
+      //const result = await GeminiService.getImageResponse(imageBase64); //Funcionando, mas desabilitado pra economizar tokens
+      //setTempAiMessage(result.data.candidates[0].content.parts[0].text);
+      tempAiMessage = "Imagem analisada com sucesso! Resultado: " + result;
+    } catch {
+      tempAiMessage = "Erro ao analisar a imagem!";
+    }
+  }
+
+  function createNewMessage(type: string, text: string, imageUri: string) {
     const newMessage: ChatMessageProps = {
-      type: "fromMe",
-      text: randomSendedMessages[Math.floor(Math.random() * randomSendedMessages.length)],
+      type: type,
+      text: text,
       createdAt: new Date(),
       imageUri: imageUri,
     };
-    setMessages([...messages, newMessage]);
+    return newMessage;
+  }
+
+  function handleCreateNewUserInput(imageAsset: ImagePicker.ImagePickerAsset) {
+    setMessages([
+      ...messages,
+      createNewMessage(
+        "fromMe",
+        randomSendedMessages[Math.floor(Math.random() * randomSendedMessages.length)],
+        imageAsset.uri
+      ),
+    ]);
   }
 
   //Load initial messages
@@ -50,14 +79,11 @@ export default function HomeScreen() {
         return;
       }
 
-      if (result.assets[0].base64 && result.assets[0].uri) {
-        setImageUri(result.assets[0].uri);
-        setImageBase64(result.assets[0].base64);
-        if (imageUri) {
-          createNewMessage(imageUri);
-        } else {
-          useToast("Error ao selecionar a imagem");
-        }
+      if (result.assets[0] && result.assets[0].base64) {
+        handleCreateNewUserInput(result.assets[0]);
+        handleNewRequestForAI(result.assets[0].base64);
+      } else {
+        useToast("Imagem invalida!");
       }
     } catch (error) {
       useToast("Error ao selecionar a imagem: " + error);
