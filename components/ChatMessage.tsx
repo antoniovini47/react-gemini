@@ -1,4 +1,5 @@
-import { View, StyleSheet, Text, Image } from "react-native";
+import { View, Text, Image } from "react-native";
+import styles from "@/assets/styles/stylesChatMessage";
 
 export interface ChatMessageProps {
   type: string;
@@ -23,68 +24,49 @@ export default function ChatMessage(props: ChatMessageProps) {
               ? styles.messageSystem
               : null
           }>
-          {/* {__DEV__ && <Text style={styles.textMessage}>type: {type}</Text>} */}
           {imageUri && <Image source={{ uri: imageUri }} style={styles.image} />}
           <Text style={styles.textMessage}>{text}</Text>
-          <Text style={styles.textCreatedAt}>
-            {type != "fromSystem" && createdAt && toDateTime(new Date(createdAt).getTime())}
-          </Text>
+          <View style={styles.containerDate}>
+            <Text style={styles.textCreatedAt}>
+              {type != "fromSystem" &&
+                createdAt &&
+                formattingTime(new Date(createdAt).getTime(), "dayMonth")}
+            </Text>
+            <Text style={styles.textCreatedAt}>
+              {type != "fromSystem" &&
+                createdAt &&
+                formattingTime(new Date(createdAt).getTime(), "hourMinute")}
+            </Text>
+          </View>
         </View>
       )}
     </>
   );
 }
 
-const styles = StyleSheet.create({
-  messageSended: {
-    borderRadius: 24,
-    paddingHorizontal: 24,
-    paddingVertical: 8,
-    marginBottom: 24,
-    alignSelf: "flex-end",
-    backgroundColor: "green",
-  },
-  messageReceived: {
-    borderRadius: 24,
-    paddingHorizontal: 24,
-    paddingVertical: 8,
-    marginBottom: 24,
-    alignSelf: "flex-start",
-    backgroundColor: "red",
-  },
-  messageSystem: {
-    borderRadius: 24,
-    paddingHorizontal: 24,
-    paddingVertical: 8,
-    marginBottom: 24,
-    alignSelf: "center",
-    backgroundColor: "gray",
-  },
-
-  textMessage: {
-    fontSize: 24,
-  },
-  textCreatedAt: {
-    alignSelf: "flex-end",
-    fontSize: 18,
-    color: "gray",
-  },
-
-  image: {
-    width: 200,
-    height: 200,
-    marginVertical: 12,
-  },
-});
-
-function toDateTime(secs: number) {
-  const time = new Date(secs); // Epoc
-  const hours = time.getHours();
-  const minutes = time.getMinutes();
+function formattingTime(secs: number, type: string) {
+  const time = new Date(secs);
+  let firstDigits, separatorChar, secondDigits;
+  switch (type) {
+    case "dayMonth":
+      firstDigits = time.getDay();
+      separatorChar = "/";
+      secondDigits = time.getMonth();
+      break;
+    case "hourMinute":
+      firstDigits = time.getHours();
+      separatorChar = ":";
+      secondDigits = time.getMinutes();
+      break;
+    default:
+      break;
+  }
 
   return (
     <Text>
-      {hours > 9 ? hours : <>0{hours}</>}:{minutes > 9 ? minutes : <>0{minutes}</>}
+      {firstDigits && firstDigits > 9 ? firstDigits : <>0{firstDigits}</>}
+      {separatorChar}
+      {secondDigits && secondDigits > 9 ? secondDigits : <>0{secondDigits}</>}
     </Text>
   );
 }
