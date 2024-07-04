@@ -7,6 +7,16 @@ import initialMessages from "@/assets/messages";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
 import useToast from "@/hooks/useToast";
+import showToast from "@/hooks/useToast";
+import { measure } from "react-native-reanimated";
+
+function waitNSecs(secs: number) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(void 0);
+    }, secs * 1000);
+  });
+}
 
 const randomSendedMessages = [
   "Avalie minha refeicao!",
@@ -16,28 +26,27 @@ const randomSendedMessages = [
 ];
 
 export default function HomeScreen() {
-  const [messages, setMessages] = useState<ChatMessageProps[]>([]);
-  let tempAiMessage = "";
+  const [messages, setMessages] = useState<ChatMessageProps[]>(initialMessages);
 
   async function handleNewRequestForAI(imageBase64: string) {
-    //setMessages([...messages, createNewMessage("fromAI", "analisando...", "")]);
+    await waitNSecs(2);
+    const messageAiResponse = createNewMessage("fromAI", "Analisando imagem...", "");
+    setMessages((previousMessages) => [...previousMessages, messageAiResponse]);
 
-    tempAiMessage = "Analisando imagem...";
     try {
-      const result = await new Promise((resolve) => {
-        setTimeout(() => {
-          resolve(void 0);
-        }, 2000);
-      });
-      //const result = await GeminiService.getImageResponse(imageBase64); //Funcionando, mas desabilitado pra economizar tokens
-      //setTempAiMessage(result.data.candidates[0].content.parts[0].text);
-      tempAiMessage = "Imagem analisada com sucesso! Resultado: " + result;
+      //await waitNSecs(2);
+      const result = await GeminiService.getImageResponse(imageBase64); //Funcionando, mas desabilitado pra economizar tokens
+      messageAiResponse.text =
+        "Imagem analisada com sucesso! Resultado: " +
+        JSON.stringify(result?.data?.contents[0]?.parts[0]?.text);
     } catch {
-      tempAiMessage = "Erro ao analisar a imagem!";
+      messageAiResponse.text = "Erro ao analisar a imagem...";
+    } finally {
+      setMessages((previousMessages) => [...previousMessages]);
     }
   }
 
-  function createNewMessage(type: string, text: string, imageUri: string) {
+  function createNewMessage(type: string, text: string, imageUri?: string) {
     const newMessage: ChatMessageProps = {
       type: type,
       text: text,
@@ -48,20 +57,17 @@ export default function HomeScreen() {
   }
 
   function handleCreateNewUserInput(imageAsset: ImagePicker.ImagePickerAsset) {
-    setMessages([
-      ...messages,
-      createNewMessage(
-        "fromMe",
-        randomSendedMessages[Math.floor(Math.random() * randomSendedMessages.length)],
-        imageAsset.uri
-      ),
-    ]);
-  }
+    const newMessage = createNewMessage(
+      "fromMe",
+      randomSendedMessages[Math.floor(Math.random() * randomSendedMessages.length)],
+      imageAsset.uri
+    );
 
-  //Load initial messages
-  useEffect(() => {
-    setMessages(initialMessages);
-  }, []);
+    setMessages((prevState) => [...prevState, newMessage]);
+    if (imageAsset.base64) {
+      handleNewRequestForAI(imageAsset.base64);
+    }
+  }
 
   const handleChooseImageFromFiles = async () => {
     try {
@@ -81,7 +87,6 @@ export default function HomeScreen() {
 
       if (result.assets[0] && result.assets[0].base64) {
         handleCreateNewUserInput(result.assets[0]);
-        handleNewRequestForAI(result.assets[0].base64);
       } else {
         useToast("Imagem invalida!");
       }
