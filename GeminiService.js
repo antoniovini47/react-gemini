@@ -16,7 +16,7 @@ const url = `https://generativelanguage.googleapis.com${version}`;
 
 const GeminiService = {
     getImageResponse: async (image64Base) => {
-        console.log("getImageResponse iniciado...Base64: ", image64Base);
+        //console.log("getImageResponse iniciado...Base64: ", image64Base);
         try {
             const response = await axios.post(urlImageAPI, 
             {
@@ -44,7 +44,7 @@ const GeminiService = {
                   'x-goog-api-key': `${GEMINI_API_KEY}`
                 },
               })
-            console.log('Response:', response);
+            //console.log('Response:', response);
             return response;
         } catch (error) {
             console.error('Error fetching data from Gemini API:', error);

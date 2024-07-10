@@ -29,18 +29,17 @@ export default function HomeScreen() {
   const [messages, setMessages] = useState<ChatMessageProps[]>(initialMessages);
 
   async function handleNewRequestForAI(imageBase64: string) {
-    await waitNSecs(2);
+    await waitNSecs(1);
     const messageAiResponse = createNewMessage("fromAI", "Analisando imagem...", "");
     setMessages((previousMessages) => [...previousMessages, messageAiResponse]);
 
     try {
-      //await waitNSecs(2);
       const result = await GeminiService.getImageResponse(imageBase64); //Funcionando, mas desabilitado pra economizar tokens
-      messageAiResponse.text =
-        "Imagem analisada com sucesso! Resultado: " +
-        JSON.stringify(result?.data?.contents[0]?.parts[0]?.text);
-    } catch {
-      messageAiResponse.text = "Erro ao analisar a imagem...";
+      const jsonResult = JSON.stringify(result.data.candidates[0].content.parts[0].text);
+
+      messageAiResponse.text = "Imagem analisada com sucesso! Resultado: " + jsonResult + " kcal";
+    } catch (error: any) {
+      messageAiResponse.text = "Erro ao analisar a imagem..." + error.message;
     } finally {
       setMessages((previousMessages) => [...previousMessages]);
     }
