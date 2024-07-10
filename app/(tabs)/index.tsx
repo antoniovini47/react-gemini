@@ -35,9 +35,10 @@ export default function HomeScreen() {
 
     try {
       const result = await GeminiService.getImageResponse(imageBase64); //Funcionando, mas desabilitado pra economizar tokens
-      const jsonResult = JSON.stringify(result.data.candidates[0].content.parts[0].text);
+      const jsonTextResponse = JSON.stringify(result.data.candidates[0].content.parts[0].text);
 
-      messageAiResponse.text = "Imagem analisada com sucesso! Resultado: " + jsonResult + " kcal";
+      messageAiResponse.text =
+        "Imagem analisada com sucesso!\nResultado: " + jsonTextResponse + " kcal";
     } catch (error: any) {
       messageAiResponse.text = "Erro ao analisar a imagem..." + error.message;
     } finally {
