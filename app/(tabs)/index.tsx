@@ -2,13 +2,10 @@ import { Text, Pressable, SafeAreaView, View, ScrollView } from "react-native";
 import ChatMessage, { ChatMessageProps } from "@/components/ChatMessage";
 import GeminiService from "@/GeminiService";
 import styles from "@/assets/styles/stylesIndex";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import initialMessages from "@/assets/messages";
 import * as ImagePicker from "expo-image-picker";
-import * as FileSystem from "expo-file-system";
 import useToast from "@/hooks/useToast";
-import showToast from "@/hooks/useToast";
-import { measure } from "react-native-reanimated";
 
 function waitNSecs(secs: number) {
   return new Promise((resolve) => {
@@ -19,10 +16,10 @@ function waitNSecs(secs: number) {
 }
 
 const randomSendedMessages = [
-  "Avalie minha refeicao!",
-  "Quanto vai me custar isso?",
-  "Da uma olhada no meu prato!",
-  "Estou com fome!",
+  "Avalie minha refeicao! ☺️",
+  "Quanto vai me custar isso? 😅",
+  "Da uma olhada no meu prato! 🫣",
+  "Estou com fome! 😋",
 ];
 
 export default function HomeScreen() {
@@ -35,10 +32,26 @@ export default function HomeScreen() {
 
     try {
       const result = await GeminiService.getImageResponse(imageBase64); //Funcionando, mas desabilitado pra economizar tokens
-      const jsonTextResponse = JSON.stringify(result.data.candidates[0].content.parts[0].text);
+      console.log("result: ", result.data.candidates[0].content.parts[0].text);
+      const jsonReponse = JSON.parse(result.data.candidates[0].content.parts[0].text);
+      const valueOfKcal = jsonReponse["k"];
+      const valueOfProteins = jsonReponse["p"];
+      const isFood: boolean = jsonReponse["m"];
 
-      messageAiResponse.text =
-        "Imagem analisada com sucesso!\nResultado: " + jsonTextResponse + " kcal";
+      let textToShow: string = "";
+
+      if (isFood) {
+        textToShow =
+          "Imagem analisada com sucesso!\nResultado: \n" +
+          valueOfKcal +
+          " kcal 🔥\n" +
+          valueOfProteins +
+          " g de proteína 💪\n";
+      } else {
+        textToShow = "Por favor, envie foto de um prato de comida!";
+      }
+
+      messageAiResponse.text = textToShow;
     } catch (error: any) {
       messageAiResponse.text = "Erro ao analisar a imagem..." + error.message;
     } finally {
@@ -95,7 +108,18 @@ export default function HomeScreen() {
     }
   };
 
-  const handleTakePicture = async () => {};
+  const handleTakePicture = async () => {
+    try {
+      let result = await ImagePicker.launchCameraAsync({
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 1,
+        base64: true,
+        cameraType: ImagePicker.CameraType.back,
+        allowsMultipleSelection: false,
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      });
+  };
 
   return (
     <SafeAreaView style={styles.containerScreen}>
