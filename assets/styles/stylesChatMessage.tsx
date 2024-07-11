@@ -16,34 +16,41 @@ const stylesChatMessage = StyleSheet.create({
   containerDate: {
     flexDirection: "row",
     justifyContent: "space-between",
+    width: "100%",
   },
 
   messageSended: {
+    width: "70%",
     borderRadius: 24,
     paddingHorizontal: 24,
     paddingVertical: 8,
+    flexDirection: "column",
     alignSelf: "flex-end",
+    alignItems: "center",
     backgroundColor: colors.greenSecondary,
     ...shadowEffect,
     marginBottom: 24,
   },
   messageReceived: {
+    width: "70%",
     borderRadius: 24,
     paddingHorizontal: 24,
     paddingVertical: 8,
-    marginBottom: 24,
     alignSelf: "flex-start",
     backgroundColor: colors.whiteIsh,
     ...shadowEffect,
+    marginBottom: 24,
   },
   messageSystem: {
+    width: "auto",
     borderRadius: 24,
     paddingHorizontal: 24,
     paddingVertical: 8,
-    marginBottom: 24,
     alignSelf: "center",
+    alignItems: "center",
     backgroundColor: colors.grayIsh,
     ...shadowEffect,
+    marginBottom: 24,
   },
 
   textMessage: {

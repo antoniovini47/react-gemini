@@ -17,8 +17,9 @@ const styles = StyleSheet.create({
     marginVertical: 12,
   },
   containerFooter: {
-    justifyContent: "space-between",
+    justifyContent: "space-around",
     flexDirection: "row",
+    marginBottom: 12,
   },
 
   textButton: {

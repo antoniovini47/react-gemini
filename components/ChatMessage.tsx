@@ -26,18 +26,16 @@ export default function ChatMessage(props: ChatMessageProps) {
           }>
           {imageUri && <Image source={{ uri: imageUri }} style={styles.image} />}
           <Text style={styles.textMessage}>{text}</Text>
-          <View style={styles.containerDate}>
-            <Text style={styles.textCreatedAt}>
-              {type != "fromSystem" &&
-                createdAt &&
-                formattingTime(new Date(createdAt).getTime(), "dayMonth")}
-            </Text>
-            <Text style={styles.textCreatedAt}>
-              {type != "fromSystem" &&
-                createdAt &&
-                formattingTime(new Date(createdAt).getTime(), "hourMinute")}
-            </Text>
-          </View>
+          {type != "fromSystem" && (
+            <View style={styles.containerDate}>
+              <Text style={styles.textCreatedAt}>
+                {createdAt && formattingTime(new Date(createdAt).getTime(), "dayMonth")}
+              </Text>
+              <Text style={styles.textCreatedAt}>
+                {createdAt && formattingTime(new Date(createdAt).getTime(), "hourMinute")}
+              </Text>
+            </View>
+          )}
         </View>
       )}
     </>

@@ -6,6 +6,7 @@ import { useState } from "react";
 import initialMessages from "@/assets/messages";
 import * as ImagePicker from "expo-image-picker";
 import useToast from "@/hooks/useToast";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 function waitNSecs(secs: number) {
   return new Promise((resolve) => {
@@ -24,6 +25,7 @@ const randomSendedMessages = [
 
 export default function HomeScreen() {
   const [messages, setMessages] = useState<ChatMessageProps[]>(initialMessages);
+  const [mediaPermission, requestPermission] = ImagePicker.useCameraPermissions();
 
   async function handleNewRequestForAI(imageBase64: string) {
     await waitNSecs(1);
@@ -46,7 +48,7 @@ export default function HomeScreen() {
           valueOfKcal +
           " kcal 🔥\n" +
           valueOfProteins +
-          " g de proteína 💪\n";
+          " g de proteína 💪";
       } else {
         textToShow = "Por favor, envie foto de um prato de comida!";
       }
@@ -54,6 +56,7 @@ export default function HomeScreen() {
       messageAiResponse.text = textToShow;
     } catch (error: any) {
       messageAiResponse.text = "Erro ao analisar a imagem..." + error.message;
+      ///TODO: Insert button to retry
     } finally {
       setMessages((previousMessages) => [...previousMessages]);
     }
@@ -104,11 +107,16 @@ export default function HomeScreen() {
         useToast("Imagem invalida!");
       }
     } catch (error) {
-      useToast("Error ao selecionar a imagem: " + error);
+      useToast("Error ao selecionar a imagem.\n" + error);
     }
   };
 
   const handleTakePicture = async () => {
+    if (mediaPermission?.granted === false) {
+      requestPermission();
+      return;
+    }
+
     try {
       let result = await ImagePicker.launchCameraAsync({
         allowsEditing: true,
@@ -119,6 +127,20 @@ export default function HomeScreen() {
         allowsMultipleSelection: false,
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
       });
+
+      if (result.canceled) {
+        useToast("Selecione uma imagem para continuar");
+        return;
+      }
+
+      if (result.assets[0] && result.assets[0].base64) {
+        handleCreateNewUserInput(result.assets[0]);
+      } else {
+        useToast("Imagem invalida!");
+      }
+    } catch (error) {
+      useToast("Error ao tirar a foto.\n" + error);
+    }
   };
 
   return (
@@ -149,13 +171,19 @@ export default function HomeScreen() {
             console.log("Opening settings...");
           }}
           style={styles.buttonFooter}>
-          <Text style={styles.textButton}>Settings</Text>
+          <Ionicons name="settings" size={36} style={{ color: "#FFF" }} />
+          {/* style={[{ marginBottom: -3 }, style]} {...rest} */}
+          {/* <Text style={styles.textButton}>Settings</Text> */}
         </Pressable>
         <Pressable onPress={handleTakePicture} style={styles.buttonFooter}>
-          <Text style={styles.textButton}>Camera</Text>
+          <Ionicons name="camera" size={36} style={{ color: "#FFF" }} />
         </Pressable>
         <Pressable onPress={handleChooseImageFromFiles} style={styles.buttonFooter}>
-          <Text style={styles.textButton}>Files</Text>
+          <Ionicons name="attach" size={36} style={{ color: "#FFF" }} />
+        </Pressable>
+
+        <Pressable onPress={() => console.log("stats clicked")} style={styles.buttonFooter}>
+          <Ionicons name="bar-chart" size={36} style={{ color: "#FFF" }} />
         </Pressable>
       </View>
     </SafeAreaView>
